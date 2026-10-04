@@ -1,0 +1,7 @@
+//Esto evita subir dependencias, archivos generados y contraseñas de configuración
+node_modules/
+dist/
+.env
+.env.*
+!.env.example
+*.log
