@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
+import ProtectedRoute from './components/auth/ProtectedRoute'; // <-- Nueva importación
 
 import Login from './Pages/auth/Login';
 import Registro from './Pages/auth/Registro';
@@ -23,13 +24,17 @@ export default function App() {
 
       <main>
         <Routes>
+          {/* Rutas Públicas */}
           <Route path="/" element={<Login />} />
           <Route path="/registro" element={<Registro />} />
-          <Route path="/inicio" element={<Dashboard />} />
-          <Route path="/saldo" element={<Saldo />} />
-          <Route path="/categorias" element={<Categorias />} />
-          <Route path="/movimientos" element={<Movimientos />} />
-          <Route path="/perfil" element={<Perfil />} />
+
+          {/* Rutas Protegidas (envueltas por tu guardián) */}
+          <Route path="/inicio" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+          <Route path="/saldo" element={<ProtectedRoute><Saldo /></ProtectedRoute>} />
+          <Route path="/categorias" element={<ProtectedRoute><Categorias /></ProtectedRoute>} />
+          <Route path="/movimientos" element={<ProtectedRoute><Movimientos /></ProtectedRoute>} />
+          <Route path="/perfil" element={<ProtectedRoute><Perfil /></ProtectedRoute>} />
+          
           <Route path="*" element={<h1>Página no encontrada</h1>} />
         </Routes>
       </main>
