@@ -317,6 +317,7 @@ Para reiniciar la base desde cero: `docker compose down -v`, y repite los pasos 
 | `Cannot GET /api/health` | Casi seguro hay otro programa respondiendo en ese puerto. Revisa quién lo usa |
 | Mi módulo no aparece en `/api/...` | Revisa que el archivo se llame `<carpeta>.routes.js`, que exporte con `export default` y que reinicies el servidor |
 | `ERR_MODULE_NOT_FOUND` al importar | Falta la extensión `.js` en el import |
+|`Cannot add the principal '...'` al ejecutar `db:crear-usuario`|La contraseña de `DB_PASSWORD` no cumple la política de SQL Server (por ejemplo, contiene el nombre del usuario). Elige una más fuerte y vuelve a ejecutar|
 
 ## 11. Flujo de trabajo del equipo
 

@@ -67,6 +67,22 @@ function validar() {
   if (DB_PASSWORD.length < 8 || DB_PASSWORD.length > 128) {
     fallar('DB_PASSWORD debe tener entre 8 y 128 caracteres.');
   }
+  if (DB_PASSWORD.toLowerCase().includes(DB_USER.toLowerCase())) {
+    fallar(
+      'DB_PASSWORD no puede contener el nombre del usuario (DB_USER). ' +
+        'SQL Server la rechaza. Elige otra contrasena.'
+    );
+  }
+
+  const categorias = [/[a-z]/, /[A-Z]/, /[0-9]/, /[^A-Za-z0-9]/].filter((r) =>
+    r.test(DB_PASSWORD)
+  ).length;
+  if (categorias < 3) {
+    fallar(
+      'DB_PASSWORD debe combinar al menos 3 de estos grupos: minusculas, ' +
+        'mayusculas, numeros y simbolos.'
+    );
+  }
 }
 
 function configConexion(usuario, password) {
@@ -88,6 +104,7 @@ function configConexion(usuario, password) {
 // QUOTENAME dentro de SQL dinamico: asi no hay inyeccion ni problemas con
 // comillas o simbolos en la contrasena.
 const SCRIPT_USUARIO = `
+SET XACT_ABORT ON;  -- el primer error detiene todo y es el que se muestra
 DECLARE @sql NVARCHAR(MAX);
 
 IF NOT EXISTS (SELECT 1 FROM sys.server_principals WHERE name = @login)
@@ -143,10 +160,14 @@ async function main() {
     console.log(`[crear-usuario] Usuario "${DB_USER}" creado/actualizado en ${DB_NAME}.`);
   } catch (err) {
     await admin.close();
+    const previos = (err.precedingErrors || [])
+      .map((e) => `            - ${e.message}`)
+      .join('\n');
     fallar(
       `No se pudo crear el usuario: ${err.message}\n` +
-        '          Si habla de la politica de contrasenas, usa una mas fuerte ' +
-        '(mayusculas, minusculas, numeros y simbolos).'
+        (previos ? `          Errores previos:\n${previos}\n` : '') +
+        '          Causas comunes: contrasena que no cumple la politica de SQL Server,\n' +
+        '          o DB_ADMIN_USER sin permisos de administrador (debe ser "sa").'
     );
   }
   await admin.close();
