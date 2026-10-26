@@ -1,0 +1,41 @@
+# =====================================================================
+# docker-compose.yml - SQL Server para Cartera Digital
+#
+# Uso (desde la carpeta backend/, donde esta el .env):
+#   docker compose up -d       -> levanta SQL Server
+#   docker compose ps          -> espera a que diga "healthy"
+#   docker compose down        -> lo apaga (los datos se conservan)
+#   docker compose down -v     -> lo apaga Y BORRA los datos (volumen)
+#
+# Variables que toma del .env:
+#   DB_ADMIN_PASSWORD -> contrasena de "sa" (solo se aplica la PRIMERA vez
+#                        que se crea el volumen; cambiarla despues en el
+#                        .env no cambia la del contenedor ya creado)
+#   DB_PORT           -> puerto del equipo (por defecto 1433)
+#
+# La contrasena debe tener minimo 8 caracteres con mayusculas, minusculas,
+# numeros y simbolos. Evita usar el simbolo $ y las comillas.
+# =====================================================================
+name: cartera-digital
+
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: cartera_sqlserver
+    restart: unless-stopped
+    ports:
+      - "${DB_PORT:-1433}:1433"
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: ${DB_ADMIN_PASSWORD:?Falta DB_ADMIN_PASSWORD en el .env}
+    volumes:
+      - cartera_sqlserver_data:/var/opt/mssql
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P \"$$MSSQL_SA_PASSWORD\" -C -Q \"SELECT 1\" || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
+volumes:
+  cartera_sqlserver_data:
