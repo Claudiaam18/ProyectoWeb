@@ -1,14 +1,15 @@
-
 import { useState } from 'react';
 import {
   BrowserRouter,
   Routes,
   Route,
-  Link,
   NavLink,
   Outlet,
   Navigate
 } from 'react-router-dom';
+
+import ProtectedRoute from './components/auth/ProtectedRoute';
+
 import './App.css';
 import './styles/categories.css';
 
@@ -20,14 +21,12 @@ import Categorias from './Pages/categories/Categorias';
 import Movimientos from './Pages/transactions/Movimientos';
 import Dashboard from './Pages/dashboard/Dashboard';
 
-
 function Bienvenida({ vistaInicial = 'bienvenida' }) {
   const [vista, setVista] = useState(vistaInicial);
 
   return (
     <div className="bienvenida">
       <div className="bienvenida-contenido">
-
         <h1>Cartera Digital</h1>
 
         {vista === 'bienvenida' && (
@@ -72,20 +71,15 @@ function Bienvenida({ vistaInicial = 'bienvenida' }) {
             </button>
           </>
         )}
-
       </div>
     </div>
   );
 }
 
-
-
 function Layout() {
   return (
     <div className="app-layout">
-
       <header className="app-header">
-
         <div className="app-logo">
           <span className="logo-icon">💳</span>
           <span>Cartera Digital</span>
@@ -98,55 +92,40 @@ function Layout() {
           <NavLink to="/movimientos">Movimientos</NavLink>
           <NavLink to="/perfil">Mi perfil</NavLink>
         </nav>
-
       </header>
 
       <main className="app-content">
         <Outlet />
       </main>
-
     </div>
   );
 }
-
-
 
 export default function App() {
   return (
     <BrowserRouter>
       <Routes>
+        {/* Rutas públicas */}
+        <Route path="/" element={<Bienvenida />} />
+        <Route path="/login" element={<Bienvenida vistaInicial="login" />} />
+        <Route path="/registro" element={<Bienvenida vistaInicial="registro" />} />
 
-        {/* Pantalla principal */}
+        {/* Rutas privadas con el diseño original */}
         <Route
-          path="/"
-          element={<Bienvenida />}
-        />
-
-        {/* Compatibilidad con rutas anteriores */}
-        <Route
-          path="/login"
-          element={<Bienvenida vistaInicial="login" />}
-        />
-
-        <Route
-          path="/registro"
-          element={<Bienvenida vistaInicial="registro" />}
-        />
-
-        {/* Páginas de los demás compañeros */}
-        <Route element={<Layout />}>
+          element={
+            <ProtectedRoute>
+              <Layout />
+            </ProtectedRoute>
+          }
+        >
           <Route path="/inicio" element={<Dashboard />} />
           <Route path="/saldo" element={<Saldo />} />
-          
-          <Route path="/categorias" element={
-            <div className="categorias-page"><Categorias /></div>} />
-
+          <Route path="/categorias" element={<Categorias />} />
           <Route path="/movimientos" element={<Movimientos />} />
           <Route path="/perfil" element={<Perfil />} />
         </Route>
 
         <Route path="*" element={<Navigate to="/" replace />} />
-
       </Routes>
     </BrowserRouter>
   );
