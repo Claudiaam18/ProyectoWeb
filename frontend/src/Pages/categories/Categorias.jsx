@@ -32,7 +32,7 @@ function AsignarForm({ onAsignar }) {
   }
 
   return (
-    <form onSubmit={manejarEnvio}>
+  <form className="categoria-asignar-form" onSubmit={manejarEnvio}>
       <input
         type="number"
         min="0.01"
@@ -107,21 +107,23 @@ export default function Categorias() {
   if (cargando) return <p>Cargando categorías...</p>;
 
   return (
-    <section>
+    <section className= "categorias-page">
       <h1>Mis categorías</h1>
       <p>Dinero sin asignar: <strong>{formatoQuetzales.format(sinAsignar)}</strong></p>
 
       {error && <p role="alert">{error}</p>}
 
-      <h2>Nueva categoría</h2>
-      <CategoriaForm onGuardar={crear} />
+      <div className="nueva-categoria-wrapper">
+        <h2>Nueva categoría</h2>
+        <CategoriaForm onGuardar={crear} />
+      </div>
 
       {categorias.length === 0 ? (
         <p>Todavía no tienes categorías.</p>
       ) : (
-        <div>
+        <div className="categorias-grid">
           {categorias.map((categoria) => (
-            <article key={categoria.id}>
+            <article className="categoria-card" key={categoria.id}>
               {editandoId === categoria.id ? (
                 <CategoriaForm
                   nombreInicial={categoria.nombre}

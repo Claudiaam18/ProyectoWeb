@@ -1,11 +1,13 @@
-
 /* =====================================
    CARTERA DIGITAL - CATEGORÍAS
 ===================================== */
 
+/* Página principal */
 .categorias-page {
   color: #183c36;
   width: 100%;
+  min-width: 0;
+  text-align: left;
 }
 
 .categorias-page h1 {
@@ -13,43 +15,81 @@
   font-weight: 700;
   margin: 0 0 24px;
   color: #183c36;
+  text-align: center;
+}
+
+.categorias-page > p {
+  text-align: center;
+  margin-bottom: 24px;
 }
 
 .categorias-page h2 {
   font-size: 20px;
-  margin: 0 0 20px;
+  margin: 0 0 8px;
   color: #183c36;
+  font-weight: 700;
 }
 
-/* Tarjetas de categorías */
-.categorias-page article {
+.nueva-categoria-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+}
+
+/* =====================================
+   TARJETAS DE CATEGORÍAS
+===================================== */
+
+/* Cuadrícula de tarjetas compactas */
+.categorias-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 320px));
+  gap: 18px;
+  margin-top: 24px;
+  align-items: start;
+  justify-content: center;
+}
+
+/* Diseño individual de cada tarjeta */
+.categorias-page .categoria-card {
   background: #ffffff;
   border: 1px solid #e8eef0;
-  border-radius: 18px;
-  padding: 24px;
+  border-radius: 16px;
+  padding: 20px;
+  min-width: 0;
   box-shadow: 0 4px 18px rgba(20, 50, 50, 0.04);
   transition: transform 0.2s ease,
               box-shadow 0.2s ease;
 }
 
-.categorias-page article:hover {
+.categorias-page .categoria-card:hover {
   transform: translateY(-3px);
   box-shadow: 0 8px 24px rgba(20, 50, 50, 0.08);
 }
 
-.categorias-page article h3 {
-  font-size: 20px;
+/* Nombre de la categoría */
+.categorias-page .categoria-card h3 {
+  font-size: 17px;
+  font-weight: 600;
   color: #183c36;
-  margin: 0 0 20px;
+  margin: 0 0 14px;
+  overflow-wrap: anywhere;
 }
 
-.categorias-page article p {
-  font-size: 14px;
+/* Información de dinero */
+.categorias-page .categoria-card p {
+  font-size: 13px;
   color: #64748b;
-  margin: 10px 0;
+  margin: 7px 0;
+  overflow-wrap: anywhere;
 }
 
-/* Formularios */
+/* =====================================
+   FORMULARIOS
+===================================== */
+
+/* Formulario general: crear o renombrar */
 .categorias-page form {
   display: flex;
   flex-wrap: wrap;
@@ -62,6 +102,11 @@
   font-size: 14px;
   font-weight: 500;
   color: #475569;
+  min-width: 0;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
 }
 
 .categorias-page input {
@@ -73,6 +118,8 @@
   color: #183c36;
   outline: none;
   min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .categorias-page input:focus {
@@ -80,12 +127,36 @@
   box-shadow: 0 0 0 3px rgba(22, 123, 101, 0.12);
 }
 
-/* Botones */
+/* Formulario de asignación dentro de la tarjeta */
+.categorias-page .categoria-asignar-form {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+  margin: 16px 0 12px;
+}
+
+.categorias-page .categoria-asignar-form input,
+.categorias-page .categoria-asignar-form button {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Evita que los campos de edición se salgan */
+.categorias-page .categoria-card input {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* =====================================
+   BOTONES
+===================================== */
+
 .categorias-page button {
   border: none;
   border-radius: 10px;
   padding: 12px 18px;
-  background: #167b65;
+  background: #1596a0;
   color: white;
   font-size: 14px;
   font-weight: 600;
@@ -94,7 +165,7 @@
 }
 
 .categorias-page button:hover:not(:disabled) {
-  background: #116653;
+  background: #0f7a84;
 }
 
 .categorias-page button:disabled {
@@ -102,7 +173,17 @@
   cursor: not-allowed;
 }
 
-/* Mensajes de error */
+/* Botones de renombrar y desactivar */
+.categorias-page .categoria-card > button {
+  margin: 4px 6px 4px 0;
+  padding: 9px 12px;
+  font-size: 12px;
+}
+
+/* =====================================
+   MENSAJES DE ERROR
+===================================== */
+
 .categorias-page [role="alert"] {
   color: #b42318;
   background: #fef3f2;
@@ -111,13 +192,21 @@
   font-size: 14px;
 }
 
-/* Diseño para pantallas pequeñas */
+/* =====================================
+   DISEÑO RESPONSIVO
+===================================== */
+
 @media (max-width: 650px) {
   .categorias-page h1 {
     font-size: 25px;
   }
 
-  .categorias-page article {
+  .categorias-grid {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+    gap: 12px;
+  }
+
+  .categorias-page .categoria-card {
     padding: 18px;
   }
 
@@ -129,5 +218,6 @@
   .categorias-page input,
   .categorias-page button {
     width: 100%;
+    box-sizing: border-box;
   }
 }
