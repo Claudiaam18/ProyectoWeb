@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import * as balanceService from '../../services/balanceService';
 import IngresoForm from './IngresoForm';
+import '../../styles/saldo.css';
 
 const formatoQuetzales = new Intl.NumberFormat('es-GT', {style: 'currency', currency : 'GTQ'});
 
@@ -18,18 +19,20 @@ export default function Saldo(){
   if (error) return <p role="alert">{error}</p>;
 
   return (
-    <section>
+    <section className="saldo-page">
       <h1>Saldo e ingresos</h1>
 
-      <div>
+      <div className="saldo-resumen">
         <p>Dinero sin asignar: <strong>{formatoQuetzales.format(saldo.saldoPrincipal)}</strong></p>
         <p>Total de ingresos: {formatoQuetzales.format(saldo.totalIngresos)}</p>
         <p>Asignado a categorías: {formatoQuetzales.format(saldo.totalAsignado)}</p>
         <p>Total gastado: {formatoQuetzales.format(saldo.totalGastado)}</p>
       </div>
 
-      <h2>Registrar ingreso</h2>
-      <IngresoForm onIngresoRegistrado={setSaldo} />
+      <div className="nuevo-ingreso-wrapper">
+        <h2>Registrar ingreso</h2>
+        <IngresoForm onIngresoRegistrado={setSaldo} />
+      </div>
     </section>
   );
 }
