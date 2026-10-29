@@ -1,0 +1,188 @@
+/* =====================================
+   CARTERA DIGITAL - MOVIMIENTOS
+===================================== */
+
+.movimientos-page {
+  color: #183c36;
+  width: 100%;
+  min-width: 0;
+  text-align: left;
+}
+
+.movimientos-page h1 {
+  font-size: 30px;
+  font-weight: 700;
+  margin: 0 0 24px;
+  color: #183c36;
+  text-align: center;
+}
+
+.movimientos-page h2 {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0 0 8px;
+  color: #183c36;
+}
+
+/* =====================================
+   FORMULARIO DE NUEVO GASTO
+===================================== */
+
+.nuevo-gasto-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  margin-bottom: 28px;
+}
+
+.movimientos-page form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: end;
+  margin: 15px 0;
+}
+
+.movimientos-page label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #475569;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+}
+
+.movimientos-page input {
+  padding: 12px 14px;
+  border: 1px solid #dce5e8;
+  border-radius: 10px;
+  background: #f8fafc;
+  font-size: 14px;
+  color: #183c36;
+  outline: none;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.movimientos-page input:focus {
+  border-color: #0d8a8a;
+  box-shadow: 0 0 0 3px rgba(13, 138, 138, 0.12);
+}
+
+/* =====================================
+   BOTONES
+===================================== */
+
+.movimientos-page button {
+  border: none;
+  border-radius: 10px;
+  padding: 12px 18px;
+  background: #0d8a8a;
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.movimientos-page button:hover:not(:disabled) {
+  background: #0a6e6e;
+}
+
+.movimientos-page button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* =====================================
+   TABLA DE HISTORIAL
+===================================== */
+
+.movimientos-tabla-wrapper {
+  background: #ffffff;
+  border: 1px solid #e8eef0;
+  border-radius: 16px;
+  padding: 20px 24px;
+  box-shadow: 0 4px 18px rgba(20, 50, 50, 0.04);
+  overflow-x: auto;
+}
+
+.movimientos-tabla-wrapper h2 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #183c36;
+  margin: 0 0 16px;
+}
+
+.movimientos-page table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.movimientos-page thead th {
+  text-align: left;
+  padding: 10px 14px;
+  color: #475569;
+  font-weight: 600;
+  border-bottom: 2px solid #e8eef0;
+  white-space: nowrap;
+}
+
+.movimientos-page tbody td {
+  padding: 10px 14px;
+  color: #183c36;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.movimientos-page tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.movimientos-page tbody tr:hover td {
+  background: #f8fafc;
+}
+
+/* =====================================
+   MENSAJES
+===================================== */
+
+.movimientos-page [role="alert"] {
+  color: #b42318;
+  background: #fef3f2;
+  padding: 12px;
+  border-radius: 10px;
+  font-size: 14px;
+}
+
+.movimientos-exito {
+  color: #166534;
+  background: #f0fdf4;
+  padding: 12px;
+  border-radius: 10px;
+  font-size: 14px;
+}
+
+/* =====================================
+   DISEÑO RESPONSIVO
+===================================== */
+
+@media (max-width: 650px) {
+  .movimientos-page h1 {
+    font-size: 25px;
+  }
+
+  .movimientos-page form {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .movimientos-page input,
+  .movimientos-page button {
+    width: 100%;
+    box-sizing: border-box;
+  }
+}

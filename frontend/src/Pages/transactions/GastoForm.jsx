@@ -27,24 +27,21 @@ export default function GastoForm({ onGastoCreado }) {
   };
 
   return (
-    <div>
-      <h3>Registrar Nuevo Gasto</h3>
-      {mensaje && <p>{mensaje}</p>}
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>ID Categoría: </label>
-          <input type="number" name="idCategoria" value={formData.idCategoria} onChange={handleChange} required />
-        </div>
-        <div>
-          <label>Monto: </label>
-          <input type="number" step="0.01" name="monto" value={formData.monto} onChange={handleChange} required />
-        </div>
-        <div>
-          <label>Descripción: </label>
-          <input type="text" name="descripcion" value={formData.descripcion} onChange={handleChange} />
-        </div>
-        <button type="submit">Guardar Gasto</button>
-      </form>
-    </div>
+    <form onSubmit={handleSubmit}>
+      <label>
+        ID Categoría
+        <input type="number" name="idCategoria" value={formData.idCategoria} onChange={handleChange} required />
+      </label>
+      <label>
+        Monto
+        <input type="number" step="0.01" name="monto" value={formData.monto} onChange={handleChange} required />
+      </label>
+      <label>
+        Descripción
+        <input type="text" name="descripcion" value={formData.descripcion} onChange={handleChange} />
+      </label>
+      {mensaje && <p className={mensaje.startsWith('Error') ? 'perfil-error' : 'movimientos-exito'}>{mensaje}</p>}
+      <button type="submit">Guardar gasto</button>
+    </form>
   );
 }

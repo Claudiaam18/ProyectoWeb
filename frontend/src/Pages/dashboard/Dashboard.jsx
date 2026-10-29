@@ -1,10 +1,8 @@
-// IMPORTANTE INSTALAR EL PAQUETE DE MODULOS DE CHART.JS Y REACT-CHART.JS
-// Comando:  "npm install chart.js react-chartjs-2"
-
 import { useEffect, useState } from 'react';
 import { getExpensesByCategoryService, getMonthlySummaryService } from '../../services/dashboardService';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement } from 'chart.js';
 import { Pie, Bar } from 'react-chartjs-2';
+import '../../styles/dashboard.css';
 
 ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement);
 
@@ -13,9 +11,8 @@ export default function Dashboard() {
   const [barData, setBarData] = useState(null);
 
   useEffect(() => {
-    const idUsuario = 1; // ID de usuario de prueba
+    const idUsuario = 1;
 
-    // 1. Cargar Gastos por Categoría
     getExpensesByCategoryService(idUsuario).then((res) => {
       setPieData({
         labels: res.chartData.labels,
@@ -27,7 +24,6 @@ export default function Dashboard() {
       });
     });
 
-    // 2. Cargar Resumen Mensual
     getMonthlySummaryService(idUsuario, 2026).then((res) => {
       const labels = res.map(i => i.MesNombre);
       const ingresos = res.map(i => i.Ingresos);
@@ -44,20 +40,20 @@ export default function Dashboard() {
   }, []);
 
   return (
-    <div>
-      <h2>Resumen Financiero (Dashboard)</h2>
+    <div className="dashboard-page">
+      <h1>Resumen financiero</h1>
 
-      <section>
-        <h3>Gastos por Categoría</h3>
-        {pieData ? <Pie data={pieData} /> : <p>Cargando gráfica...</p>}
-      </section>
+      <div className="dashboard-grid">
+        <div className="dashboard-card">
+          <h2>Gastos por categoría</h2>
+          {pieData ? <Pie data={pieData} /> : <p>Cargando gráfica...</p>}
+        </div>
 
-      <hr />
-
-      <section>
-        <h3>Flujo Mensual (Ingresos vs Gastos)</h3>
-        {barData ? <Bar data={barData} /> : <p>Cargando gráfica...</p>}
-      </section>
+        <div className="dashboard-card">
+          <h2>Flujo mensual (Ingresos vs Gastos)</h2>
+          {barData ? <Bar data={barData} /> : <p>Cargando gráfica...</p>}
+        </div>
+      </div>
     </div>
   );
 }

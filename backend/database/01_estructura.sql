@@ -130,5 +130,23 @@ BEGIN
 END
 GO
 
+/* ---------------------------------------------------------------------
+   6. Tabla PreferenciasUsuario
+   --------------------------------------------------------------------- */
+IF OBJECT_ID(N'dbo.PreferenciasUsuario', N'U') IS NULL
+BEGIN
+    CREATE TABLE dbo.PreferenciasUsuario (
+        IDUsuario  INT         NOT NULL,
+        Moneda     VARCHAR(10) NOT NULL CONSTRAINT DF_Preferencias_Moneda DEFAULT ('GTQ'),
+        Tema       VARCHAR(20) NOT NULL CONSTRAINT DF_Preferencias_Tema   DEFAULT ('claro'),
+
+        CONSTRAINT PK_PreferenciasUsuario         PRIMARY KEY (IDUsuario),
+        CONSTRAINT FK_PreferenciasUsuario_Usuario FOREIGN KEY (IDUsuario) REFERENCES dbo.Usuario (IDUsuario),
+        CONSTRAINT CK_Preferencias_Moneda         CHECK (Moneda IN ('GTQ', 'USD')),
+        CONSTRAINT CK_Preferencias_Tema           CHECK (Tema   IN ('claro', 'oscuro'))
+    );
+END
+GO
+
 PRINT 'Estructura de CarteraDigital verificada/creada correctamente.';
 GO

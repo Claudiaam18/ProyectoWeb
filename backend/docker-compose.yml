@@ -37,5 +37,22 @@ services:
       retries: 10
       start_period: 20s
 
+  sqlserver-init:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: cartera_sqlserver_init
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+    volumes:
+      - ./database:/scripts
+    environment:
+      MSSQL_SA_PASSWORD: ${DB_ADMIN_PASSWORD:?Falta DB_ADMIN_PASSWORD en el .env}
+    command: >
+      bash -c "
+        /opt/mssql-tools18/bin/sqlcmd -S sqlserver -U sa -P \"$$MSSQL_SA_PASSWORD\" -C -i /scripts/01_estructura.sql &&
+        /opt/mssql-tools18/bin/sqlcmd -S sqlserver -U sa -P \"$$MSSQL_SA_PASSWORD\" -C -i /scripts/02_datos_prueba.sql
+      "
+    restart: on-failure
+
 volumes:
   cartera_sqlserver_data:
