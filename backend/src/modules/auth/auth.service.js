@@ -1,42 +1,121 @@
-import jwt from 'jsonwebtoken';
+
 import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import { getPool, sql } from '../../config/db.js';
 
-export const loginUser = async (correo, contrasena) => {
-    // Simulación de base de datos usando los datos de prueba de Tony
-    if (correo === "maria@test.com" && contrasena === "Test1234!") {
+const JWT_SECRET = process.env.JWT_SECRET;
 
-        // Creamos el payload con los datos del usuario
-        const payload = {
-            id: 1,
-            nombre: "Maria",
-            correo: correo
-        };
-
-        // Generamos el JWT (luego moveremos el texto secreto al archivo .env)
-        const token = jwt.sign(payload, "secreto_temporal_proyecto_web", { expiresIn: '2h' });
-
-        return token;
-    } else {
-        throw new Error("Credenciales inválidas");
-    }
+if (!JWT_SECRET) {
+    throw new Error('Falta configurar JWT_SECRET en las variables de entorno');
 };
 
-export const registerUser = async (nombre, apellido, correo, contrasena) => {
-    // 1. Generamos un "salt" (un valor aleatorio para hacer el hash más seguro)
-    const salt = await bcrypt.genSalt(10);
+// 1. INICIAR SESIÓN
+export const loginUser = async (correo, contrasena) => {
+    const pool = await getPool();
 
-    // 2. Encriptamos la contraseña
-    const contrasenaEncriptada = await bcrypt.hash(contrasena, salt);
+    const resultado = await pool.request()
+        .input('correo', sql.VarChar(100), correo)
+        .query(`
+            SELECT
+                IDUsuario,
+                Nombre,
+                Apellido,
+                Correo,
+                Contrasena,
+                SaldoPrincipal
+            FROM Usuario
+            WHERE Correo = @correo
+        `);
 
-    // 3. Simulamos guardar en la base de datos (luego lo conectaremos con db.js)
-    const nuevoUsuario = {
-        nombre,
-        apellido,
-        correo,
-        hash: contrasenaEncriptada
+    const usuario = resultado.recordset[0];
+
+    if (!usuario) {
+        throw new Error('Credenciales inválidas');
+    }
+
+    const esValida = await bcrypt.compare(
+        contrasena,
+        usuario.Contrasena
+    );
+
+    if (!esValida) {
+        throw new Error('Credenciales inválidas');
+    }
+
+    const payload = {
+        id: usuario.IDUsuario,
+        nombre: usuario.Nombre,
+        apellido: usuario.Apellido,
+        correo: usuario.Correo
     };
 
-    console.log("Simulación de guardado en BD:", nuevoUsuario);
+    const token = jwt.sign(payload, JWT_SECRET, {
+        expiresIn: '2h'
+    });
 
-    return { mensaje: "Usuario registrado con éxito" };
+    return {
+        token,
+        usuario: {
+            id: usuario.IDUsuario,
+            nombre: usuario.Nombre,
+            apellido: usuario.Apellido,
+            correo: usuario.Correo,
+            saldo: usuario.SaldoPrincipal
+        }
+    };
+};
+
+// 2. CREAR CUENTA
+export const registerUser = async (
+    nombre,
+    apellido,
+    correo,
+    contrasena
+) => {
+    const pool = await getPool();
+
+    const usuarioExistente = await pool.request()
+        .input('correo', sql.VarChar(100), correo)
+        .query(`
+            SELECT IDUsuario
+            FROM Usuario
+            WHERE Correo = @correo
+        `);
+
+    if (usuarioExistente.recordset.length > 0) {
+        throw new Error('El correo electrónico ya está registrado');
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    const hash = await bcrypt.hash(contrasena, salt);
+
+    await pool.request()
+        .input('nombre', sql.VarChar(50), nombre)
+        .input('apellido', sql.VarChar(50), apellido)
+        .input('correo', sql.VarChar(100), correo)
+        .input('contrasena', sql.VarChar(255), hash)
+        .query(`
+            INSERT INTO Usuario (
+                Nombre,
+                Apellido,
+                Correo,
+                Contrasena,
+                SaldoPrincipal,
+                FechaRegistro,
+                UltimaEdicion
+            )
+            VALUES (
+                @nombre,
+                @apellido,
+                @correo,
+                @contrasena,
+                0.00,
+                GETDATE(),
+                GETDATE()
+            )
+        `);
+
+    return {
+        mensaje: 'Usuario registrado exitosamente'
+    };
 };

@@ -1,62 +1,72 @@
+
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { login } from '../../services/authService';
 
 export default function Login() {
-  // Estados para guardar los datos del formulario
   const [correo, setCorreo] = useState('');
   const [contrasena, setContrasena] = useState('');
   const [error, setError] = useState(null);
+  const [cargando, setCargando] = useState(false);
 
-  // Hook para navegar a otras pantallas
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
-    e.preventDefault(); // Evita que la página recargue al enviar el formulario
-    setError(null); // Limpiamos errores previos
+    e.preventDefault();
+    setError(null);
+    setCargando(true);
 
     try {
-      // Llamamos a tu servicio enviando el correo y contraseña
-      const respuesta = await login(correo, contrasena);
-      console.log("Éxito:", respuesta.mensaje);
-
-      // Si todo sale bien, lo mandamos a la ruta protegida (ej. /balance)
-      navigate('/saldo');
+      await login(correo, contrasena);
+      navigate('/inicio');
     } catch (err) {
-      // Si las credenciales son incorrectas, mostramos el error
-      setError(err.message);
+      setError(err.message || 'Error al iniciar sesión');
+    } finally {
+      setCargando(false);
     }
   };
 
   return (
     <div className="auth-container">
-      <h2>Iniciar Sesión</h2>
+      <div className="auth-form">
+        <h2>Iniciar Sesión</h2>
 
-      {error && <p style={{ color: 'red' }}>{error}</p>}
+        {error && (
+          <p role="alert" style={{ color: 'red' }}>
+            {error}
+          </p>
+        )}
 
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Correo Electrónico:</label>
-          <input
-            type="email"
-            value={correo}
-            onChange={(e) => setCorreo(e.target.value)}
-            required
-          />
-        </div>
+        <form onSubmit={handleSubmit}>
+          <div>
+            <label htmlFor="login-correo">Correo Electrónico:</label>
+            <input
+              id="login-correo"
+              type="email"
+              value={correo}
+              onChange={(e) => setCorreo(e.target.value)}
+              autoComplete="email"
+              required
+            />
+          </div>
 
-        <div>
-          <label>Contraseña:</label>
-          <input
-            type="password"
-            value={contrasena}
-            onChange={(e) => setContrasena(e.target.value)}
-            required
-          />
-        </div>
+          <div>
+            <label htmlFor="login-contrasena">Contraseña:</label>
+            <input
+              id="login-contrasena"
+              type="password"
+              value={contrasena}
+              onChange={(e) => setContrasena(e.target.value)}
+              autoComplete="current-password"
+              required
+            />
+          </div>
 
-        <button type="submit">Entrar</button>
-      </form>
+          <button type="submit" disabled={cargando}>
+            {cargando ? 'Ingresando...' : 'Entrar'}
+          </button>
+        </form>
+      </div>
     </div>
   );
 }
