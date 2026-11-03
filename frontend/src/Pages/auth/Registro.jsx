@@ -33,33 +33,32 @@ export default function Registro() {
   };
 
   return (
-    <div className="auth-form">
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      {exito && <p style={{ color: 'green' }}>Cuenta creada con éxito. Redirigiendo...</p>}
+    <form onSubmit={handleSubmit}>
+      {error && <p className="auth-error">{error}</p>}
+      {exito && <p className="auth-exito">Cuenta creada con éxito. Redirigiendo...</p>}
 
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Nombre:</label>
-          <input type="text" value={nombre} onChange={(e) => setNombre(e.target.value)} required />
-        </div>
-        <div>
-          <label>Apellido:</label>
-          <input type="text" value={apellido} onChange={(e) => setApellido(e.target.value)} required />
-        </div>
-        <div>
-          <label>Correo Electrónico:</label>
-          <input type="email" value={correo} onChange={(e) => setCorreo(e.target.value)} required />
-        </div>
-        <div>
-          <label>Contraseña:</label>
-          <input type="password" value={contrasena} onChange={(e) => setContrasena(e.target.value)} required />
-        </div>
-        <div>
-          <label>Confirmar Contraseña:</label>
-          <input type="password" value={confirmar} onChange={(e) => setConfirmar(e.target.value)} required />
-        </div>
-        <button type="submit">Registrarme</button>
-      </form>
-    </div>
+      <label>
+        Nombre
+        <input type="text" value={nombre} onChange={(e) => setNombre(e.target.value)} required />
+      </label>
+      <label>
+        Apellido
+        <input type="text" value={apellido} onChange={(e) => setApellido(e.target.value)} required />
+      </label>
+      <label>
+        Correo electrónico
+        <input type="email" value={correo} onChange={(e) => setCorreo(e.target.value)} required />
+      </label>
+      <label>
+        Contraseña
+        <input type="password" value={contrasena} onChange={(e) => setContrasena(e.target.value)} required />
+      </label>
+      <label>
+        Confirmar contraseña
+        <input type="password" value={confirmar} onChange={(e) => setConfirmar(e.target.value)} required />
+      </label>
+
+      <button type="submit">Registrarme</button>
+    </form>
   );
 }

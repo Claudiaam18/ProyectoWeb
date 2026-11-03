@@ -51,10 +51,52 @@ function AsignarForm({ onAsignar }) {
   );
 }
 
+function AjustarForm({ disponibleActual, onAjustar, onCancelar }) {
+  const [monto, setMonto] = useState(String(disponibleActual));
+  const [enviando, setEnviando] = useState(false);
+  const [error, setError] = useState('');
+
+  async function manejarEnvio(evento) {
+    evento.preventDefault();
+    const montoNumero = Number(monto);
+    if (isNaN(montoNumero) || montoNumero < 0) {
+      setError('Ingresa un monto válido');
+      return;
+    }
+    setEnviando(true);
+    setError('');
+    try {
+      await onAjustar(montoNumero);
+      onCancelar();
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setEnviando(false);
+    }
+  }
+
+  return (
+    <form className="categoria-asignar-form" onSubmit={manejarEnvio}>
+      <input
+        type="number"
+        min="0"
+        step="0.01"
+        value={monto}
+        onChange={(e) => setMonto(e.target.value)}
+        required
+      />
+      <button type="submit" disabled={enviando}>{enviando ? 'Guardando...' : 'Confirmar'}</button>
+      <button type="button" onClick={onCancelar}>Cancelar</button>
+      {error && <p role="alert">{error}</p>}
+    </form>
+  );
+}
+
 export default function Categorias() {
   const [categorias, setCategorias] = useState([]);
   const [sinAsignar, setSinAsignar] = useState(0);
   const [editandoId, setEditandoId] = useState(null);
+  const [ajustandoId, setAjustandoId] = useState(null);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState('');
 
@@ -86,6 +128,11 @@ export default function Categorias() {
   async function renombrar(id, nombre) {
     await categoryService.editarCategoria(id, nombre);
     setEditandoId(null);
+    await cargarDatos();
+  }
+
+  async function ajustar(id, monto) {
+    await categoryService.ajustarPresupuesto(id, monto);
     await cargarDatos();
   }
 
@@ -140,6 +187,16 @@ export default function Categorias() {
               <p>Disponible: {formatoQuetzales.format(categoria.disponible)}</p>
 
               <AsignarForm onAsignar={(monto) => asignar(categoria.id, monto)} />
+
+              {ajustandoId === categoria.id ? (
+                <AjustarForm
+                  disponibleActual={categoria.disponible}
+                  onAjustar={(monto) => ajustar(categoria.id, monto)}
+                  onCancelar={() => setAjustandoId(null)}
+                />
+              ) : (
+                <button type="button" onClick={() => setAjustandoId(categoria.id)}>Ajustar presupuesto</button>
+              )}
 
               <button type="button" onClick={() => setEditandoId(categoria.id)}>Renombrar</button>
               <button type="button" onClick={() => desactivar(categoria)}>Desactivar</button>

@@ -1,14 +1,19 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { createExpenseService } from '../../services/transactionService';
+import { listarCategorias } from '../../services/categoryService';
 
 export default function GastoForm({ onGastoCreado }) {
+  const [categorias, setCategorias] = useState([]);
   const [formData, setFormData] = useState({
-    idUsuario: 1, // ID por defecto para pruebas
     idCategoria: '',
     monto: '',
     descripcion: ''
   });
   const [mensaje, setMensaje] = useState('');
+
+  useEffect(() => {
+    listarCategorias().then(setCategorias).catch(console.error);
+  }, []);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -19,8 +24,8 @@ export default function GastoForm({ onGastoCreado }) {
     try {
       await createExpenseService(formData);
       setMensaje('Gasto registrado con éxito');
-      setFormData({ idUsuario: 1, idCategoria: '', monto: '', descripcion: '' });
-      if (onGastoCreado) onGastoCreado(); // Recargar la lista en Movimientos
+      setFormData({ idCategoria: '', monto: '', descripcion: '' });
+      if (onGastoCreado) onGastoCreado();
     } catch (err) {
       setMensaje(`Error: ${err.message}`);
     }
@@ -29,8 +34,13 @@ export default function GastoForm({ onGastoCreado }) {
   return (
     <form onSubmit={handleSubmit}>
       <label>
-        ID Categoría
-        <input type="number" name="idCategoria" value={formData.idCategoria} onChange={handleChange} required />
+        Categoría
+        <select name="idCategoria" value={formData.idCategoria} onChange={handleChange} required>
+          <option value="">Selecciona una categoría</option>
+          {categorias.map((c) => (
+            <option key={c.id} value={c.id}>{c.nombre}</option>
+          ))}
+        </select>
       </label>
       <label>
         Monto

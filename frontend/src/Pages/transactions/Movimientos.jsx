@@ -39,8 +39,6 @@ export default function Movimientos() {
           <table>
             <thead>
               <tr>
-                <th>ID</th>
-                <th>Usuario</th>
                 <th>Categoría</th>
                 <th>Tipo</th>
                 <th>Monto</th>
@@ -51,12 +49,10 @@ export default function Movimientos() {
             <tbody>
               {expenses.map((item) => (
                 <tr key={item.IDTransaccion}>
-                  <td>{item.IDTransaccion}</td>
-                  <td>{item.IDUsuario}</td>
-                  <td>{item.IDCategoria}</td>
+                  <td>{item.categoria ?? '—'}</td>
                   <td>{item.Tipo}</td>
                   <td>Q{item.Monto}</td>
-                  <td>{item.Descripcion}</td>
+                  <td>{item.Descripcion ?? '—'}</td>
                   <td>{new Date(item.Fecha).toLocaleString()}</td>
                 </tr>
               ))}

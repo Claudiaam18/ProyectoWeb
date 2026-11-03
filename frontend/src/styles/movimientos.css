@@ -54,7 +54,8 @@
   gap: 12px;
 }
 
-.movimientos-page input {
+.movimientos-page input,
+.movimientos-page select {
   padding: 12px 14px;
   border: 1px solid #dce5e8;
   border-radius: 10px;
@@ -67,7 +68,8 @@
   box-sizing: border-box;
 }
 
-.movimientos-page input:focus {
+.movimientos-page input:focus,
+.movimientos-page select:focus {
   border-color: #0d8a8a;
   box-shadow: 0 0 0 3px rgba(13, 138, 138, 0.12);
 }

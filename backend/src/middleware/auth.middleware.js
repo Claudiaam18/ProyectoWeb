@@ -17,7 +17,7 @@ export const verificarToken = (req, res, next) => {
 
     try {
         // Verificamos el token con la misma clave secreta que usamos al crearlo en el login
-        const verificado = jwt.verify(token, "secreto_temporal_proyecto_web");
+        const verificado = jwt.verify(token, process.env.JWT_SECRET);
 
         // Guardamos los datos decodificados en la petición para que los controladores puedan saber quién es
         req.usuario = verificado;

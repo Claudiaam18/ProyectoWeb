@@ -1,9 +1,14 @@
 const API_URL = 'http://localhost:3000/api';
 
+function authHeader() {
+    const token = localStorage.getItem('token');
+    return token ? { Authorization: `Bearer ${token}` } : {};
+}
+
 async function solicitar(ruta, opciones = {}){
     const respuesta = await fetch(`${API_URL}${ruta}`,{
         ...opciones,
-        headers: { 'Content-Type': 'application/json', ...opciones.headers},
+        headers: { 'Content-Type': 'application/json', ...authHeader(), ...opciones.headers},
     });
     const datos = await respuesta.json().catch(()=> null);
 

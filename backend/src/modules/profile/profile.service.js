@@ -66,7 +66,7 @@ export async function cambiarContrasena(idUsuario, contrasenaActual, contrasenaN
   await pool.request()
     .input('id', sql.Int, idUsuario)
     .input('hash', sql.VarChar(255), nuevoHash)
-    .query(`UPDATE dbo.Usuario SET ContrasenaHash = @hash WHERE IDUsuario = @id`);
+    .query(`UPDATE dbo.Usuario SET Contrasena = @hash WHERE IDUsuario = @id`);
 
   return { mensaje: 'Contraseña actualizada correctamente' };
 }

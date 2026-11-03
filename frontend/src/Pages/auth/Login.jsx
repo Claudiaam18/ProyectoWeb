@@ -27,46 +27,24 @@ export default function Login() {
   };
 
   return (
-    <div className="auth-container">
-      <div className="auth-form">
-        <h2>Iniciar Sesión</h2>
+    <form onSubmit={handleSubmit}>
+      {error && <p className="auth-error" role="alert">{error}</p>}
 
-        {error && (
-          <p role="alert" style={{ color: 'red' }}>
-            {error}
-          </p>
-        )}
+      <label>
+        Correo electrónico
+        <input id="login-correo" type="email" value={correo}
+          onChange={(e) => setCorreo(e.target.value)} autoComplete="email" required />
+      </label>
 
-        <form onSubmit={handleSubmit}>
-          <div>
-            <label htmlFor="login-correo">Correo Electrónico:</label>
-            <input
-              id="login-correo"
-              type="email"
-              value={correo}
-              onChange={(e) => setCorreo(e.target.value)}
-              autoComplete="email"
-              required
-            />
-          </div>
+      <label>
+        Contraseña
+        <input id="login-contrasena" type="password" value={contrasena}
+          onChange={(e) => setContrasena(e.target.value)} autoComplete="current-password" required />
+      </label>
 
-          <div>
-            <label htmlFor="login-contrasena">Contraseña:</label>
-            <input
-              id="login-contrasena"
-              type="password"
-              value={contrasena}
-              onChange={(e) => setContrasena(e.target.value)}
-              autoComplete="current-password"
-              required
-            />
-          </div>
-
-          <button type="submit" disabled={cargando}>
-            {cargando ? 'Ingresando...' : 'Entrar'}
-          </button>
-        </form>
-      </div>
-    </div>
+      <button type="submit" disabled={cargando}>
+        {cargando ? 'Ingresando...' : 'Entrar'}
+      </button>
+    </form>
   );
 }

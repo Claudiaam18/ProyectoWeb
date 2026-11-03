@@ -1,75 +1,70 @@
-// src/modules/expenses/expenses.controller.js
-import sql from 'mssql';
-
-// Configuración tomada de process.env
-const dbConfig = {
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    server: process.env.DB_SERVER, // e.g., 'localhost' o dirección IP
-    database: process.env.DB_NAME,
-    port: Number(process.env.DB_PORT || 1433),
-    options: {
-        encrypt: false, // Cambiar a true si usas Azure SQL
-        trustServerCertificate: true, // Necesario para conexiones locales de desarrollo
-    },
-};
-
+import { getPool, sql } from '../../config/db.js';
 
 export const getExpenses = async (req, res) => {
     try {
-
-        const pool = await sql.connect(dbConfig);
-
-        // Consulta simple para obtener todo el historial de transacciones
-        const result = await pool.request().query('SELECT * FROM Transaccion ORDER BY Fecha DESC');
+        const pool = await getPool();
+        const result = await pool.request()
+            .input('idUsuario', sql.Int, req.usuario.id)
+            .query(`
+                SELECT t.IDTransaccion, t.Tipo, t.Monto, t.Descripcion, t.Fecha,
+                       c.Nombre AS categoria
+                FROM dbo.Transaccion t
+                LEFT JOIN dbo.Categoria c ON c.IDCategoria = t.IDCategoria
+                WHERE t.IDUsuario = @idUsuario
+                ORDER BY t.Fecha DESC
+            `);
         res.json(result.recordset);
-
     } catch (error) {
-
-        console.error('Error al obtener el historial de gastos:', error);
-        res.status(500).json({
-            mensaje: 'Error interno al consultar el historial',
-            error: error.message
-        });
-
+        res.status(500).json({ mensaje: 'Error al obtener transacciones', error: error.message });
     }
 };
 
 export const createExpense = async (req, res) => {
-    const { idUsuario, idCategoria, monto, descripcion } = req.body;
+    const { idCategoria, monto, descripcion } = req.body;
 
-    // Validación rápida de parámetros de entrada
-    if (!idUsuario || !idCategoria || !monto) {
-        return res.status(400).json({
-            mensaje: 'Los campos idUsuario, idCategoria y monto son obligatorios.'
-        });
+    if (!idCategoria || !monto) {
+        return res.status(400).json({ mensaje: 'Los campos idCategoria y monto son obligatorios.' });
     }
 
+    const montoNum = Number(monto);
+    if (!Number.isFinite(montoNum) || montoNum <= 0) {
+        return res.status(400).json({ mensaje: 'El monto debe ser un número mayor que 0.' });
+    }
+
+    const pool = await getPool();
+    const transaction = new sql.Transaction(pool);
+    await transaction.begin();
+
     try {
+        const catResult = await new sql.Request(transaction)
+            .input('idUsuario', sql.Int, req.usuario.id)
+            .input('idCategoria', sql.Int, Number(idCategoria))
+            .input('monto', sql.Decimal(12, 2), montoNum)
+            .query(`
+                UPDATE dbo.Categoria
+                SET SaldoDisponible = SaldoDisponible - @monto
+                WHERE IDCategoria = @idCategoria AND IDUsuario = @idUsuario
+                  AND Activo = 1 AND SaldoDisponible >= @monto
+            `);
 
-        const pool = await sql.connect(dbConfig);
+        if (catResult.rowsAffected[0] === 0) {
+            throw { status: 400, message: 'Saldo insuficiente en la categoría o categoría no encontrada.' };
+        }
 
-        // Ejecución del procedimiento almacenado pasando parámetros de forma segura
-        const result = await pool.request()
-            .input('IDUsuario', sql.Int, idUsuario)
-            .input('IDCategoria', sql.Int, idCategoria)
-            .input('Monto', sql.Decimal(18, 2), monto)
-            .input('Descripcion', sql.VarChar(255), descripcion || '')
-            .execute('sp_RegistrarGasto');
+        await new sql.Request(transaction)
+            .input('idUsuario', sql.Int, req.usuario.id)
+            .input('idCategoria', sql.Int, Number(idCategoria))
+            .input('monto', sql.Decimal(12, 2), montoNum)
+            .input('descripcion', sql.VarChar(200), descripcion?.toString().trim() || null)
+            .query(`
+                INSERT INTO dbo.Transaccion (IDUsuario, IDCategoria, Tipo, Monto, Descripcion)
+                VALUES (@idUsuario, @idCategoria, 'gasto', @monto, @descripcion)
+            `);
 
-        res.status(201).json({
-            mensaje: 'Gasto registrado con éxito',
-            detalle: result.recordset[0]
-        });
-
+        await transaction.commit();
+        res.status(201).json({ mensaje: 'Gasto registrado con éxito' });
     } catch (error) {
-
-        console.error('Error al registrar el gasto:', error);
-        // Si el RAISERROR del Stored Procedure salta (ej. Saldo insuficiente), se captura aquí
-        res.status(400).json({
-            mensaje: 'No se pudo realizar el gasto',
-            error: error.message
-        });
-        
+        await transaction.rollback();
+        res.status(error.status || 500).json({ mensaje: error.message || 'No se pudo registrar el gasto' });
     }
 };

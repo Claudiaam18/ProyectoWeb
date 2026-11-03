@@ -12,6 +12,7 @@ import ProtectedRoute from './components/auth/ProtectedRoute';
 
 import './App.css';
 import './styles/categories.css';
+import './styles/bienvenida.css';
 
 import Login from './Pages/auth/Login';
 import Registro from './Pages/auth/Registro';
@@ -26,51 +27,43 @@ function Bienvenida({ vistaInicial = 'bienvenida' }) {
 
   return (
     <div className="bienvenida">
+
+      {/* ENCABEZADO con botones arriba */}
+      <header className="bienvenida-header">
+        <div className="bienvenida-logo">
+          <span className="bienvenida-logo-icon">💳</span>
+          <span>Cartera Digital</span>
+        </div>
+        <nav className="bienvenida-nav">
+          <button className="btn-login" onClick={() => setVista('login')}>Iniciar sesión</button>
+          <button className="btn-registro" onClick={() => setVista('registro')}>Crear cuenta</button>
+        </nav>
+      </header>
+
+      {/* CONTENIDO CENTRAL */}
       <div className="bienvenida-contenido">
-        <h1>Cartera Digital</h1>
 
         {vista === 'bienvenida' && (
           <>
-            <h2>¡Bienvenido!</h2>
-            <p>Tu dinero, tus metas, tu tranquilidad.</p>
-
-            <button onClick={() => setVista('login')}>
-              Iniciar sesión
-            </button>
-
-            <button onClick={() => setVista('registro')}>
-              Crear cuenta
-            </button>
+            <h1 className="bienvenida-titulo">Cartera Digital</h1>
+            <p className="bienvenida-subtitulo">Tu dinero, tus metas, tu tranquilidad.</p>
           </>
         )}
 
         {vista === 'login' && (
-          <>
+          <div className="bienvenida-card auth-form">
+            <h2>Iniciar sesión</h2>
             <Login />
-
-            <button onClick={() => setVista('registro')}>
-              ¿No tienes cuenta? Regístrate
-            </button>
-
-            <button onClick={() => setVista('bienvenida')}>
-              Volver
-            </button>
-          </>
+          </div>
         )}
 
         {vista === 'registro' && (
-          <>
+          <div className="bienvenida-card auth-form">
+            <h2>Crear cuenta</h2>
             <Registro />
-
-            <button onClick={() => setVista('login')}>
-              ¿Ya tienes cuenta? Inicia sesión
-            </button>
-
-            <button onClick={() => setVista('bienvenida')}>
-              Volver
-            </button>
-          </>
+          </div>
         )}
+
       </div>
     </div>
   );
