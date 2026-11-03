@@ -1,0 +1,253 @@
+/* =====================================
+   CARTERA DIGITAL - MI PERFIL
+===================================== */
+
+.perfil-page {
+  color: #183c36;
+  width: 100%;
+  min-width: 0;
+  text-align: left;
+}
+
+.perfil-page h1 {
+  font-size: 30px;
+  font-weight: 700;
+  margin: 0 0 6px;
+  color: #183c36;
+  text-align: center;
+}
+
+.perfil-subtitulo {
+  text-align: center;
+  font-size: 14px;
+  color: #64748b;
+  margin: 0 0 28px;
+}
+
+/* =====================================
+   AVATAR Y RESUMEN
+===================================== */
+
+.perfil-resumen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 28px;
+}
+
+.perfil-avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: #0d8a8a;
+  color: white;
+  font-size: 26px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  letter-spacing: 1px;
+}
+
+.perfil-resumen-nombre {
+  font-size: 18px;
+  font-weight: 600;
+  color: #183c36;
+  margin: 0;
+}
+
+.perfil-resumen-correo {
+  font-size: 13px;
+  color: #64748b;
+  margin: 0;
+}
+
+/* =====================================
+   TARJETAS DE SECCIÓN
+===================================== */
+
+.perfil-card {
+  background: #ffffff;
+  border: 1px solid #e8eef0;
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 18px rgba(20, 50, 50, 0.04);
+}
+
+.perfil-card h2 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #183c36;
+  margin: 0 0 18px;
+}
+
+/* =====================================
+   GRID DE INFORMACIÓN
+===================================== */
+
+.perfil-info-grid {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  gap: 10px 16px;
+  margin-bottom: 18px;
+  font-size: 14px;
+}
+
+.perfil-label {
+  font-weight: 600;
+  color: #475569;
+}
+
+/* =====================================
+   FORMULARIOS
+===================================== */
+
+.perfil-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.perfil-page label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #475569;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.perfil-mostrar-check {
+  flex-direction: row !important;
+  align-items: center;
+  gap: 8px !important;
+  font-size: 13px;
+  color: #64748b;
+  cursor: pointer;
+}
+
+.perfil-mostrar-check input[type="checkbox"] {
+  width: auto;
+}
+
+.perfil-page input,
+.perfil-page select {
+  padding: 12px 14px;
+  border: 1px solid #dce5e8;
+  border-radius: 10px;
+  background: #f8fafc;
+  font-size: 14px;
+  color: #183c36;
+  outline: none;
+  box-sizing: border-box;
+  font-family: inherit;
+}
+
+.perfil-page input:focus,
+.perfil-page select:focus {
+  border-color: #0d8a8a;
+  box-shadow: 0 0 0 3px rgba(13, 138, 138, 0.12);
+}
+
+.perfil-botones {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* =====================================
+   BOTONES
+===================================== */
+
+.perfil-page button {
+  border: none;
+  border-radius: 10px;
+  padding: 12px 18px;
+  background: #0d8a8a;
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  font-family: inherit;
+}
+
+.perfil-page button:hover:not(:disabled) {
+  background: #0a6e6e;
+}
+
+.perfil-page button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.perfil-btn-secundario {
+  background: #e8eef0 !important;
+  color: #475569 !important;
+}
+
+.perfil-btn-secundario:hover:not(:disabled) {
+  background: #d1dde2 !important;
+}
+
+.perfil-btn-cerrar {
+  background: #b42318 !important;
+  width: 100%;
+  margin-top: 4px;
+}
+
+.perfil-btn-cerrar:hover:not(:disabled) {
+  background: #8f1b13 !important;
+}
+
+/* =====================================
+   MENSAJES
+===================================== */
+
+.perfil-error {
+  color: #b42318;
+  background: #fef3f2;
+  padding: 12px;
+  border-radius: 10px;
+  font-size: 14px;
+  margin: 0;
+}
+
+.perfil-exito {
+  color: #166534;
+  background: #f0fdf4;
+  padding: 12px;
+  border-radius: 10px;
+  font-size: 14px;
+  margin: 0;
+}
+
+/* =====================================
+   DISEÑO RESPONSIVO
+===================================== */
+
+@media (max-width: 650px) {
+  .perfil-page h1 {
+    font-size: 25px;
+  }
+
+  .perfil-info-grid {
+    grid-template-columns: 1fr;
+    gap: 4px 0;
+  }
+
+  .perfil-label {
+    margin-top: 8px;
+  }
+
+  .perfil-botones {
+    flex-direction: column;
+  }
+
+  .perfil-page button {
+    width: 100%;
+    box-sizing: border-box;
+  }
+}
