@@ -5,14 +5,14 @@ function getHeaders() {
   return { Authorization: `Bearer ${token}` };
 }
 
-export const getExpensesByCategoryService = async (idUsuario) => {
-  const res = await fetch(`${API_URL}/gastos-por-categoria?idUsuario=${idUsuario}`);
+export const getExpensesByCategoryService = async () => {
+  const res = await fetch(`${API_URL}/gastos-por-categoria`, { headers: getHeaders() });
   if (!res.ok) throw new Error('Error al obtener gastos por categoría');
   return res.json();
 };
 
-export const getMonthlySummaryService = async (idUsuario, anio) => {
-  const res = await fetch(`${API_URL}/resumen-mensual?idUsuario=${idUsuario}&anio=${anio}`);
+export const getMonthlySummaryService = async (anio) => {
+  const res = await fetch(`${API_URL}/resumen-mensual?anio=${anio}`, { headers: getHeaders() });
   if (!res.ok) throw new Error('Error al obtener resumen mensual');
   return res.json();
 };

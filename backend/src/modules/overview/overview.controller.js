@@ -1,34 +1,15 @@
 import { getPool, sql } from '../../config/db.js';
 
-const dbConfig = {
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  server: process.env.DB_SERVER,
-  database: process.env.DB_NAME,
-  port: Number(process.env.DB_PORT || 1433),
-  options: {
-    encrypt: false,
-    trustServerCertificate: true,
-  },
-};
-
-/**
- * 1. Gastos agrupados por Categoría (gráfica de pastel)
- * GET /api/overview/gastos-por-categoria?idUsuario=1
- */
 export const getExpensesByCategory = async (req, res) => {
-  const { idUsuario } = req.query;
-  if (!idUsuario) return res.status(400).json({ mensaje: 'El parámetro idUsuario es requerido.' });
-
   try {
-    const pool = await sql.connect(dbConfig);
+    const pool = await getPool();
     const result = await pool.request()
-      .input('IDUsuario', sql.Int, idUsuario)
+      .input('IDUsuario', sql.Int, req.usuario.id)
       .query(`
         SELECT c.Nombre AS categoria, SUM(t.Monto) AS total
-        FROM Transaccion t
-        INNER JOIN Categoria c ON t.IDCategoria = c.IDCategoria
-        WHERE t.IDUsuario = @IDUsuario AND t.Tipo = 'Gasto'
+        FROM dbo.Transaccion t
+        INNER JOIN dbo.Categoria c ON t.IDCategoria = c.IDCategoria
+        WHERE t.IDUsuario = @IDUsuario AND t.Tipo = 'gasto'
         GROUP BY c.Nombre
         ORDER BY total DESC;
       `);
@@ -41,27 +22,21 @@ export const getExpensesByCategory = async (req, res) => {
   }
 };
 
-/**
- * 2. Comparativa mensual ingresos vs gastos (gráfica de barras)
- * GET /api/overview/resumen-mensual?idUsuario=1&anio=2026
- */
 export const getMonthlySummary = async (req, res) => {
-  const { idUsuario, anio } = req.query;
-  const targetYear = anio || new Date().getFullYear();
-  if (!idUsuario) return res.status(400).json({ mensaje: 'El parámetro idUsuario es requerido.' });
+  const targetYear = req.query.anio || new Date().getFullYear();
 
   try {
-    const pool = await sql.connect(dbConfig);
+    const pool = await getPool();
     const result = await pool.request()
-      .input('IDUsuario', sql.Int, idUsuario)
-      .input('Anio', sql.Int, targetYear)
+      .input('IDUsuario', sql.Int, req.usuario.id)
+      .input('Anio', sql.Int, Number(targetYear))
       .query(`
         SELECT
           MONTH(Fecha) AS MesNumero,
           DATENAME(MONTH, Fecha) AS MesNombre,
-          SUM(CASE WHEN Tipo = 'Ingreso' THEN Monto ELSE 0 END) AS Ingresos,
-          SUM(CASE WHEN Tipo = 'Gasto'   THEN Monto ELSE 0 END) AS Gastos
-        FROM Transaccion
+          SUM(CASE WHEN Tipo = 'ingresoSaldo' THEN Monto ELSE 0 END) AS Ingresos,
+          SUM(CASE WHEN Tipo = 'gasto'        THEN Monto ELSE 0 END) AS Gastos
+        FROM dbo.Transaccion
         WHERE IDUsuario = @IDUsuario AND YEAR(Fecha) = @Anio
         GROUP BY MONTH(Fecha), DATENAME(MONTH, Fecha)
         ORDER BY MesNumero ASC;
@@ -73,10 +48,6 @@ export const getMonthlySummary = async (req, res) => {
   }
 };
 
-/**
- * 3. Tarjetas de resumen: saldo, ingresos del mes, gastos del mes, balance
- * GET /api/overview/resumen-tarjetas
- */
 export const getResumenTarjetas = async (req, res) => {
   try {
     const pool = await getPool();
@@ -108,10 +79,6 @@ export const getResumenTarjetas = async (req, res) => {
   }
 };
 
-/**
- * 4. Últimos 5 movimientos del usuario
- * GET /api/overview/ultimos-movimientos
- */
 export const getUltimosMovimientos = async (req, res) => {
   try {
     const pool = await getPool();

@@ -32,12 +32,10 @@ export default function Dashboard() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const idUsuario = 1;
-
     getResumenTarjetasService().then(setTarjetas).catch(console.error);
     getUltimosMovimientosService().then(setMovimientos).catch(console.error);
 
-    getExpensesByCategoryService(idUsuario).then((res) => {
+    getExpensesByCategoryService().then((res) => {
       setPieData({
         labels: res.chartData.labels,
         datasets: [{ label: 'Monto Gastado (Q)', data: res.chartData.data,
@@ -45,7 +43,7 @@ export default function Dashboard() {
       });
     }).catch(console.error);
 
-    getMonthlySummaryService(idUsuario, new Date().getFullYear()).then((res) => {
+    getMonthlySummaryService(new Date().getFullYear()).then((res) => {
       setBarData({
         labels: res.map(i => i.MesNombre),
         datasets: [
